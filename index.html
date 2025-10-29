@@ -1,85 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Fluid from bodyHands</title>
-    <style>
-        body {
-            margin: 0;
-            background-color: #000;
-            color: #fff;
-            font-family: Helvetica, Arial, sans-serif;
-            overflow: hidden; /* disable scrolling / rubberband effect on mobile */
-            height:100vh;
-        }
+  <meta charset="utf-8" />
+  <title>Fluid from bodyHands</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="description" content="made with cables" />
+  <meta itemprop="name" content="Fluid from bodyHands" />
+  <meta itemprop="description" content="made with cables" />
+  <meta itemprop="image" content="screenshot.png" />
+  <link rel="icon" href="data:," /> <!-- favicon hatasını önler -->
 
-        canvas {
-            display: block;
-            position: absolute;
-            outline:0;
-        }
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      color: #fff;
+      font-family: Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
 
-        * {
-            /* disable on touch highlights of html elements, especially on mobile! */
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
+    canvas {
+      display: block;
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      outline: 0;
+    }
 
-    </style>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
-    <meta itemprop="name" content="Fluid from bodyHands">
-    <meta itemprop="description" content="made with cables">
-    <meta itemprop="image" content="screenshot.png">
-    <meta name="description" content="made with cables"/>
-
+    * {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+  </style>
 </head>
+
 <body>
-    <canvas id="glcanvas" width="100vw" height="100vh" tabindex="1"></canvas>
+  <canvas id="glcanvas" tabindex="1"></canvas>
 
-    
-    <script type="text/javascript" src="js/patch.js" async></script>
-    
+  <!-- Cables çekirdek dosyası -->
+  <script type="text/javascript" src="cables.min.js"></script>
 
-    <script type="text/javascript">
+  <!-- Export edilen patch -->
+  <script type="text/javascript" src="patch.js" async></script>
 
-        function showError(initiator,...args)
-        {
-            CABLES.logErrorConsole("[" + initiator + "]", ...args);
-        }
+  <script type="text/javascript">
+    function showError(initiator, ...args) {
+      if (window.CABLES && CABLES.logErrorConsole) {
+        CABLES.logErrorConsole("[" + initiator + "]", ...args);
+      } else {
+        console.error("Cables Error:", initiator, ...args);
+      }
+    }
 
-        function patchInitialized(patch)
-        {
-            // You can now access the patch object (patch), register variable watchers and so on
-        }
+    function patchInitialized(patch) {
+      // Patch erişilebilir hale geldiğinde çalışır.
+    }
 
-        function patchFinishedLoading(patch)
-        {
-            // The patch is ready now, all assets have been loaded
-        }
+    function patchFinishedLoading(patch) {
+      // Tüm assetler yüklendiğinde çalışır.
+    }
 
-        document.addEventListener("CABLES.jsLoaded", function (event)
-        {
-            CABLES.patch = new CABLES.Patch({
-                patch: CABLES.exportedPatch,
-                "prefixAssetPath": "",
-                "assetPath": "assets/",
-                "jsPath": "js/",
-                "glCanvasId": "glcanvas",
-                "glCanvasResizeToWindow": true,
-                "onError": showError,
-                "onPatchLoaded": patchInitialized,
-                "onFinishedLoading": patchFinishedLoading,
-                "canvas": {"alpha":true, "premultipliedAlpha":true } // make canvas transparent
-            });
-        });
+    // Cables motoru yüklendiğinde patch'i başlat
+    document.addEventListener("CABLES.jsLoaded", function () {
+      CABLES.patch = new CABLES.Patch({
+        patch: CABLES.exportedPatch,
+        prefixAssetPath: "",
+        assetPath: "assets/",
+        glCanvasId: "glcanvas",
+        glCanvasResizeToWindow: true,
+        onError: showError,
+        onPatchLoaded: patchInitialized,
+        onFinishedLoading: patchFinishedLoading,
+        canvas: { alpha: true, premultipliedAlpha: true }
+      });
+    });
 
-        // disable rubberband effect on mobile devices
-        document.getElementById('glcanvas').addEventListener('touchmove', (e)=>{ e.preventDefault(); }, false);
-    </script>
+    // Mobilde kaydırma engeli
+    document
+      .getElementById("glcanvas")
+      .addEventListener("touchmove", (e) => e.preventDefault(), false);
+  </script>
 </body>
 </html>
